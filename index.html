@@ -53,7 +53,8 @@
         .cont2,
         .cont3,
         .cont4,
-        .cont5 {
+        .cont5,
+        .cont6 {
             border-style: solid;
             border-color: black;
             text-align: center;
@@ -87,19 +88,25 @@
         </div>
     </div>
     <div class="cont3">
-        <h1 class="m">mq</h1>
+        <h1 class="m">mq-7</h1>
         <p class="mq_7" id="mq_7">0</p>
     </div>
     <div class="cont4">
+        <h1 class="m">mq-135</h1>
+        <p class="mq_135" id="mq_135">0</p>
+    </div>
+    <div class="cont5">
         <h1 class="lat">lat</h1>
         <p class="latitude" id="latitude">0.000</p>
     </div>
-    <div class="cont5">
+    <div class="cont6">
         <h1 class="long">long</h1>
         <p class="longitude" id="longitude">0.000</p>
     </div>
     <div class="map" id="map" style="width: 600px; height: 600px;"></div>
-    <div class="my"><p class="name">@ done by us</p></div>
+    <div class="my">
+        <p class="name">@ done by us</p>
+    </div>
 
     <script type="module">
         // Import the functions you need from the SDKs you need
@@ -131,6 +138,7 @@
         var dataRef5 = database.ref('data/longitude');
         var dataRef6 = database.ref("data/earth");
         var dataRef7 = database.ref("data/emergency");
+        var dataRef8 = database.ref("data/mq_135");
         let latitude = 0;
         let longitude = 0;
         let map = L.map('map');
@@ -171,6 +179,11 @@
                 alert("emergency !!!!!!!");
             }
         })
+        dataRef8.on('value', funtion(getdata8))
+        {
+            var mq_135 = (getdata8.val());
+            document.getElementById('mq_135').innerHTML = mq_135;
+        }
         var updatemap = () => {
             map.setView([latitude, longitude], 13);
             L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
