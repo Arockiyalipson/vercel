@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mini-project</title>
+    <title>Smart-helmet</title>
     <link rel="stylesheet" type="type/css" href="style.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
@@ -22,7 +22,7 @@
             color: black;
             font-family: 'Courier New', Courier, monospace;
             font-weight: bolder;
-            font-size: 50px;
+            font-size: 75px;
             text-align: center;
             text-decoration: none;
         }
@@ -33,6 +33,7 @@
         .m,
         .lat,
         .long {
+            font-size: 50px;
             text-decoration: none;
             font-family: Arial, Helvetica, sans-serif;
             color: black;
@@ -41,11 +42,21 @@
         /* value properties */
         .temp,
         .hum,
-        .mq_7,
+        .mq_9,
         .latitude,
         .longitude {
             font-family: Arial, Helvetica, sans-serif;
             text-decoration: none;
+            font-size: 30px;
+            font-weight: bolder;
+        }
+
+        .mq_135 {
+            font-size: 50px;
+            font-weight: bolder;
+            font-family: 'Courier New', Courier, monospace;
+            text-decoration: none;
+
         }
 
         /* container color  */
@@ -59,13 +70,48 @@
             border-color: black;
             text-align: center;
             border-radius: 20%;
-            width: 20%;
-            height: 20%;
+            width: 30%;
+            height: 50%;
+            margin: 20px;
+            box-sizing: border-box;
+            box-shadow: 10px 10px 5px black;
+        }
+
+        .temp,
+        .hum,
+        .mq_9,
+        .latitude,
+        .longitude {
+            font-family: Arial, Helvetica, sans-serif;
+            text-decoration: none;
+            font-size: 30px;
+            font-weight: bolder;
+        }
+
+        .mq_135 {
+            font-size: 40px;
+            font-weight: bolder;
+            font-family: 'Courier New', Courier, monospace;
+            text-decoration: none;
+            margin: none;
+
         }
 
         .map {
             border-style: none;
             border-radius: 5%;
+            width: 1250px;
+            height: 600px;
+        }
+
+        .first {
+            display: flex;
+            flex-wrap: nowrap;
+        }
+
+        .second {
+            display: flex;
+            flex-wrap: nowrap;
         }
     </style>
 
@@ -74,39 +120,43 @@
 <body>
 
     <div class="head">
-        <h1 class="topic">Mini-project</h1>
+        <h1 class="topic">🪖 Smart-Helmet 🪖</h1>
     </div>
     <div class="first">
         <div class="cont1">
-            <h1 class="t">Temp</h1>
+            <h1 class="t">Temperature </h1>
             <p class="temp" id="temp">0</p>
         </div>
 
         <div class="cont2">
-            <h1 class="h">Hum</h1>
+            <h1 class="h">Humidity</h1>
             <p class="hum" id="hum">0</p>
         </div>
+
+        <div class="cont3">
+            <h1 class="m">CO level</h1>
+            <p class="mq_9" id="mq_9">0</p>
+        </div>
     </div>
-    <div class="cont3">
-        <h1 class="m">mq-7</h1>
-        <p class="mq_7" id="mq_7">0</p>
+    <div class="second">
+        <div class="cont4">
+            <h1 class="m">Air-quality</h1>
+            <p class="mq_135" id="mq_135"></p>
+        </div>
+        <div class="cont5">
+            <h1 class="lat">latitude</h1>
+            <p class="latitude" id="latitude">0.000</p>
+        </div>
+        <div class="cont6">
+            <h1 class="long">longitude</h1>
+            <p class="longitude" id="longitude">0.000</p>
+        </div>
     </div>
-    <div class="cont4">
-        <h1 class="m">mq-135</h1>
-        <p class="mq_135" id="mq_135">0</p>
-    </div>
-    <div class="cont5">
-        <h1 class="lat">lat</h1>
-        <p class="latitude" id="latitude">0.000</p>
-    </div>
-    <div class="cont6">
-        <h1 class="long">long</h1>
-        <p class="longitude" id="longitude">0.000</p>
-    </div>
-    <div class="map" id="map" style="width: 600px; height: 600px;"></div>
+    <div class="map" id="map"></div>
     <div class="my">
         <p class="name">@ done by us</p>
     </div>
+
 
     <script type="module">
         // Import the functions you need from the SDKs you need
@@ -133,7 +183,7 @@
         //getting reference to the data we want
         var dataRef1 = database.ref('data/temp');
         var dataRef2 = database.ref('data/hum');
-        var dataRef3 = database.ref('data/mq_7');
+        var dataRef3 = database.ref('data/mq_9');
         var dataRef4 = database.ref('data/latitude');
         var dataRef5 = database.ref('data/longitude');
         var dataRef6 = database.ref("data/earth");
@@ -153,8 +203,8 @@
             document.getElementById('hum').innerHTML = humi + "%";
         })
         dataRef3.on('value', function (getdata3) {
-            var mq_7 = getdata3.val();
-            document.getElementById('mq_7').innerHTML = mq_7 + "ppm";
+            var mq_9 = getdata3.val();
+            document.getElementById('mq_9').innerHTML = mq_9 + "ppm";
         })
         dataRef4.on('value', function (getdata4) {
             latitude = (getdata4.val());
@@ -168,24 +218,38 @@
         })
         dataRef6.on('value', function (getdata6) {
             var earthquake = (getdata6.val());
-            console.log(earthquake);
-            if (earthquake == true) {
-                alert("earthquake");
+            if (earthquake == 1) {
+                alert("earthquake !!!!!!!!");
             }
         })
         dataRef7.on('value', function (getdata7) {
             var emegency_alert = (getdata7.val());
-            if (emegency_alert == true) {
+            if (emegency_alert == 1) {
                 alert("emergency !!!!!!!");
             }
         })
-        dataRef8.on('value', funtion(getdata8))
-        {
+        dataRef8.on('value', function (getdata8) {
             var mq_135 = (getdata8.val());
-            document.getElementById('mq_135').innerHTML = mq_135;
-        }
+            // console.log(mq_135)
+            var changetxt = document.getElementById('mq_135');
+            if (mq_135 <= 150) {
+                const newtext1 = document.createTextNode('GOOD');
+                changetxt.appendChild(newtext1);
+                changetxt.style.color = 'green';
+            }
+            else if ((mq_135 > 150) && (mq_135 <= 500)) {
+                const newtext2 = document.createTextNode('Normal');
+                changetxt.appendChild(newtext2);
+                changetxt.style.color = 'yellow';
+            }
+            else if (mq_135 >= 600) {
+                const newtext3 = document.createTextNode('BAD!!!!');
+                changetxt.appendChild(newtext3);
+                changetxt.style.color = 'red';
+            }
+        })
         var updatemap = () => {
-            map.setView([latitude, longitude], 13);
+            map.setView([latitude, longitude], 10);
             L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             }).addTo(map);
